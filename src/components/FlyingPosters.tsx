@@ -106,8 +106,10 @@ void main() {
 }
 `;
 
-function AutoBind(self, { include, exclude } = {}) {
-  const getAllProperties = (object) => {
+function AutoBind(self: any, options: { include?: string[]; exclude?: string[] } = {}) {
+  const { include, exclude } = options;
+  
+  const getAllProperties = (object: any) => {
     const properties = new Set();
     do {
       for (const key of Reflect.ownKeys(object)) {
@@ -117,9 +119,10 @@ function AutoBind(self, { include, exclude } = {}) {
     return properties;
   };
 
-  const filter = (key) => {
-    const match = (pattern) =>
-      typeof pattern === "string" ? key === pattern : pattern.test(key);
+  const filter = (key: string | symbol) => {
+    const keyStr = key.toString();
+    const match = (pattern: string) =>
+      typeof pattern === "string" ? keyStr === pattern : pattern.test?.(keyStr);
 
     if (include) return include.some(match);
     if (exclude) return !exclude.some(match);
@@ -136,42 +139,63 @@ function AutoBind(self, { include, exclude } = {}) {
   return self;
 }
 
-function lerp(p1, p2, t) {
+function lerp(p1: number, p2: number, t: number) {
   return p1 + (p2 - p1) * t;
 }
 
-function map(num, min1, max1, min2, max2, round = false) {
+function map(num: number, min1: number, max1: number, min2: number, max2: number, round = false) {
   const num1 = (num - min1) / (max1 - min1);
   const num2 = num1 * (max2 - min2) + min2;
   return round ? Math.round(num2) : num2;
 }
 
+interface MediaParams {
+  gl: any;
+  geometry: any;
+  scene: any;
+  screen: { width: number; height: number };
+  viewport: { width: number; height: number };
+  image: string;
+  length: number;
+  index: number;
+  planeWidth: number;
+  planeHeight: number;
+  distortion: number;
+}
+
 class Media {
-  constructor({
-    gl,
-    geometry,
-    scene,
-    screen,
-    viewport,
-    image,
-    length,
-    index,
-    planeWidth,
-    planeHeight,
-    distortion,
-  }) {
+  extra = 0;
+  gl: any;
+  geometry: any;
+  scene: any;
+  screen: { width: number; height: number };
+  viewport: { width: number; height: number };
+  image: string;
+  length: number;
+  index: number;
+  planeWidth: number;
+  planeHeight: number;
+  distortion: number;
+  program: any;
+  plane: any;
+  padding = 0;
+  height = 0;
+  heightTotal = 0;
+  y = 0;
+
+  constructor(params: MediaParams) {
     this.extra = 0;
-    this.gl = gl;
-    this.geometry = geometry;
-    this.scene = scene;
-    this.screen = screen;
-    this.viewport = viewport;
-    this.image = image;
-    this.length = length;
-    this.index = index;
-    this.planeWidth = planeWidth;
-    this.planeHeight = planeHeight;
-    this.distortion = distortion;
+    this.gl = params.gl;
+    this.geometry = params.geometry;
+    this.scene = params.scene;
+    this.screen = params.screen;
+    this.viewport = params.viewport;
+    this.image = params.image;
+    this.length = params.length;
+    this.index = params.index;
+    this.planeWidth = params.planeWidth;
+    this.planeHeight = params.planeHeight;
+    this.distortion = params.distortion;
 
     this.createShader();
     this.createMesh();
@@ -236,7 +260,7 @@ class Media {
     ];
   }
 
-  onResize({ screen, viewport } = {}) {
+  onResize({ screen, viewport }: { screen?: { width: number; height: number }; viewport?: { width: number; height: number } } = {}) {
     if (screen) this.screen = screen;
     if (viewport) {
       this.viewport = viewport;
@@ -254,7 +278,7 @@ class Media {
     this.y = -this.heightTotal / 2 + (this.index + 0.5) * this.height;
   }
 
-  update(scroll) {
+  update(scroll: { current: number }) {
     this.plane.position.y = this.y - scroll.current - this.extra;
 
     const position = map(
@@ -283,32 +307,61 @@ class Media {
   }
 }
 
+interface CanvasParams {
+  container: HTMLElement;
+  canvas: HTMLCanvasElement;
+  items: string[];
+  planeWidth: number;
+  planeHeight: number;
+  distortion: number;
+  scrollEase: number;
+  cameraFov: number;
+  cameraZ: number;
+}
+
 class Canvas {
-  constructor({
-    container,
-    canvas,
-    items,
-    planeWidth,
-    planeHeight,
-    distortion,
-    scrollEase,
-    cameraFov,
-    cameraZ,
-  }) {
-    this.container = container;
-    this.canvas = canvas;
-    this.items = items;
-    this.planeWidth = planeWidth;
-    this.planeHeight = planeHeight;
-    this.distortion = distortion;
+  container: HTMLElement;
+  canvas: HTMLCanvasElement;
+  items: string[];
+  planeWidth: number;
+  planeHeight: number;
+  distortion: number;
+  scroll: {
+    ease: number;
+    current: number;
+    target: number;
+    last: number;
+    position?: number;
+  };
+  cameraFov: number;
+  cameraZ: number;
+  renderer: any;
+  gl: any;
+  camera: any;
+  scene: any;
+  screen: { width: number; height: number } = { width: 0, height: 0 };
+  viewport: { width: number; height: number } = { width: 0, height: 0 };
+  planeGeometry: any;
+  medias: Media[] = [];
+  loaded = 0;
+  isDown = false;
+  start = 0;
+
+  constructor(params: CanvasParams) {
+    this.container = params.container;
+    this.canvas = params.canvas;
+    this.items = params.items;
+    this.planeWidth = params.planeWidth;
+    this.planeHeight = params.planeHeight;
+    this.distortion = params.distortion;
     this.scroll = {
-      ease: scrollEase,
+      ease: params.scrollEase,
       current: 0,
       target: 0,
       last: 0,
     };
-    this.cameraFov = cameraFov;
-    this.cameraZ = cameraZ;
+    this.cameraFov = params.cameraFov;
+    this.cameraZ = params.cameraZ;
 
     AutoBind(this);
 
@@ -413,24 +466,24 @@ class Canvas {
     }
   }
 
-  onTouchDown(e) {
+  onTouchDown(e: MouseEvent | TouchEvent) {
     this.isDown = true;
     this.scroll.position = this.scroll.current;
-    this.start = e.touches ? e.touches[0].clientY : e.clientY;
+    this.start = 'touches' in e ? e.touches[0].clientY : e.clientY;
   }
 
-  onTouchMove(e) {
+  onTouchMove(e: MouseEvent | TouchEvent) {
     if (!this.isDown) return;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const distance = (this.start - y) * 0.1;
-    this.scroll.target = this.scroll.position + distance;
+    this.scroll.target = this.scroll.position! + distance;
   }
 
   onTouchUp() {
     this.isDown = false;
   }
 
-  onWheel(e) {
+  onWheel(e: WheelEvent) {
     const speed = e.deltaY;
     this.scroll.target += speed * 0.005;
   }
@@ -447,7 +500,7 @@ class Canvas {
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
-    requestAnimationFrame(this.update);
+    requestAnimationFrame(this.update.bind(this));
   }
 
   addEventListeners() {
@@ -479,6 +532,17 @@ class Canvas {
   }
 }
 
+interface FlyingPostersProps {
+  items?: string[];
+  planeWidth?: number;
+  planeHeight?: number;
+  distortion?: number;
+  scrollEase?: number;
+  cameraFov?: number;
+  cameraZ?: number;
+  className?: string;
+}
+
 export default function FlyingPosters({
   items = [],
   planeWidth = 320,
@@ -489,13 +553,13 @@ export default function FlyingPosters({
   cameraZ = 20,
   className,
   ...props
-}) {
-  const containerRef = useRef(null);
-  const canvasRef = useRef(null);
-  const instanceRef = useRef(null);
+}: FlyingPostersProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const instanceRef = useRef<Canvas | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !canvasRef.current) return;
 
     instanceRef.current = new Canvas({
       container: containerRef.current,
@@ -522,14 +586,14 @@ export default function FlyingPosters({
 
     const canvasEl = canvasRef.current;
 
-    const handleWheel = (e) => {
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (instanceRef.current) {
         instanceRef.current.onWheel(e);
       }
     };
 
-    const handleTouchMove = (e) => {
+    const handleTouchMove = (e: TouchEvent) => {
       e.preventDefault();
     };
 
