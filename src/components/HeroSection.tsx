@@ -1,186 +1,153 @@
 
-import React, { useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Play, Zap, Code, Database, Shield } from 'lucide-react';
-import { Button } from './ui/button';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Zap, Code, Database, Shield } from 'lucide-react';
+import LetterGlitch from './LetterGlitch';
+import Particles from './Particles';
 
 const HeroSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-
-  const techIcons = [
-    { icon: Code, label: 'Full Stack', color: 'text-cyber-blue' },
-    { icon: Database, label: 'Data Science', color: 'text-cyber-purple' },
-    { icon: Shield, label: 'Cyber Security', color: 'text-cyber-pink' },
-    { icon: Zap, label: 'AI/ML', color: 'text-cyber-green' }
-  ];
-
   return (
-    <div ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 cyber-grid opacity-20" />
-      
-      {/* 3D Floating Elements */}
-      <div className="absolute inset-0 perspective-1000">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-4 h-4 bg-gradient-to-br from-cyber-blue to-cyber-purple rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              rotateX: [0, 360],
-              rotateY: [0, 360],
-              scale: [1, 1.2, 1]
-            }}
-            transition={{
-              duration: 4 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.2,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* LetterGlitch Background */}
+      <div className="absolute inset-0 z-0">
+        <LetterGlitch
+          glitchColors={['#00f5ff', '#8b5cf6', '#ec4899']}
+          glitchSpeed={80}
+          centerVignette={true}
+          outerVignette={false}
+          smooth={true}
+        />
       </div>
 
-      <motion.div
-        style={{ y, opacity }}
-        className="container mx-auto px-4 text-center relative z-10"
-      >
-        {/* Main Content */}
+      {/* Particles Layer */}
+      <div className="absolute inset-0 z-10">
+        <Particles
+          particleColors={['#00f5ff', '#8b5cf6']}
+          particleCount={150}
+          particleSpread={8}
+          speed={0.05}
+          particleBaseSize={80}
+          moveParticlesOnHover={true}
+          alphaParticles={true}
+          disableRotation={false}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="max-w-4xl mx-auto"
+          transition={{ duration: 0.8 }}
+          className="mb-8"
         >
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-cyber-blue text-lg font-medium mb-4"
-          >
-            Experience, Learn, Thrive.
-          </motion.p>
-
-          {/* Main Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+          <motion.h1 
+            className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink bg-clip-text text-transparent"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
           >
             Transform Your Career with{' '}
-            <span className="neon-text relative">
-              INLIGHN TECH
-              <motion.div
-                animate={{ scaleX: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyber-blue to-cyber-purple"
-              />
-            </span>
+            <span className="neon-text">INLIGHN TECH</span>
           </motion.h1>
-
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
+          
+          <motion.p 
+            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Gain real-world experience with our immersive internship programs in 
-            <span className="text-cyber-blue"> Cyber Security</span>, 
-            <span className="text-cyber-purple"> Full Stack Development</span>, 
-            <span className="text-cyber-pink"> Data Science</span>, and various tech domains.
+            Gain real-world experience with our immersive internship programs in{' '}
+            <span className="text-cyber-blue font-semibold">Cyber Security</span>,{' '}
+            <span className="text-cyber-purple font-semibold">Full Stack Development</span>,{' '}
+            <span className="text-cyber-pink font-semibold">Data Science</span>, and more tech domains.
           </motion.p>
 
-          {/* Tech Icons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-wrap justify-center gap-6 mb-10"
+          <motion.p 
+            className="text-lg text-muted-foreground mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
           >
-            {techIcons.map((tech, index) => (
-              <motion.div
-                key={tech.label}
-                whileHover={{ scale: 1.1, rotateY: 180 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col items-center p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 preserve-3d"
-              >
-                <tech.icon className={`w-8 h-8 ${tech.color} mb-2`} />
-                <span className="text-sm font-medium">{tech.label}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:from-cyber-purple hover:to-cyber-pink text-white border-0 cyber-glow px-8 py-6 text-lg font-semibold"
-              >
-                Explore Internships
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10 px-8 py-6 text-lg font-semibold"
-              >
-                <Play className="mr-2 w-5 h-5" />
-                Watch Demo
-              </Button>
-            </motion.div>
-          </motion.div>
+            Learn today, lead tomorrow.
+          </motion.p>
         </motion.div>
 
-        {/* Scroll Indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
         >
+          <Button 
+            size="lg" 
+            className="bg-gradient-to-r from-cyber-blue to-cyber-purple hover:from-cyber-purple hover:to-cyber-pink text-white px-8 py-4 text-lg font-semibold rounded-xl cyber-glow transform hover:scale-105 transition-all duration-300"
+          >
+            Explore Internships
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="border-2 border-cyber-blue text-cyber-blue hover:bg-cyber-blue hover:text-black px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
+          >
+            Learn More
+          </Button>
+        </motion.div>
+
+        {/* Tech Icons */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="flex justify-center items-center gap-8 flex-wrap"
+        >
+          {[
+            { icon: Code, label: "Full Stack", color: "text-cyber-blue" },
+            { icon: Database, label: "Data Science", color: "text-cyber-purple" },
+            { icon: Shield, label: "Cyber Security", color: "text-cyber-pink" },
+            { icon: Zap, label: "Innovation", color: "text-cyber-green" }
+          ].map((item, index) => (
+            <motion.div
+              key={item.label}
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card/20 backdrop-blur-sm border border-border/20 hover:border-border/40 transition-all duration-300"
+              whileHover={{ scale: 1.05, y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
+            >
+              <item.icon className={`h-8 w-8 ${item.color}`} />
+              <span className="text-sm font-medium text-muted-foreground">{item.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-sm text-muted-foreground">Scroll to explore</span>
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
             className="w-6 h-10 border-2 border-cyber-blue rounded-full flex justify-center"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
             <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
               className="w-1 h-3 bg-cyber-blue rounded-full mt-2"
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
           </motion.div>
-        </motion.div>
+        </div>
       </motion.div>
-    </div>
+    </section>
   );
 };
 

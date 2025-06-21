@@ -1,154 +1,128 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Database, Shield, Brain, Smartphone, Cloud } from 'lucide-react';
-import { Button } from './ui/button';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Code, Database, Shield, Briefcase, Cpu, Globe } from 'lucide-react';
+import FlyingPosters from './FlyingPosters';
 
 const ProgramsSection = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Create program poster images using placeholders with program themes
+  const programImages = [
+    'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=400&fit=crop', 
+    'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&h=400&fit=crop'
+  ];
+
   const programs = [
     {
-      icon: Code2,
+      icon: Code,
       title: "Full Stack Development",
-      description: "Master modern web development with React, Node.js, MongoDB, and cutting-edge technologies.",
+      description: "Master both frontend and backend technologies with React, Node.js, and modern frameworks.",
       duration: "12 weeks",
       level: "Beginner to Advanced",
-      color: "cyber-blue",
-      features: ["React & Next.js", "Node.js & Express", "MongoDB & PostgreSQL", "REST APIs", "Deployment"]
+      color: "from-cyber-blue to-blue-600"
     },
     {
       icon: Database,
-      title: "Data Science",
-      description: "Dive deep into data analysis, machine learning, and AI with hands-on projects.",
-      duration: "16 weeks",
+      title: "Data Science & Analytics",
+      description: "Learn data analysis, machine learning, and visualization with Python and modern tools.",
+      duration: "10 weeks", 
       level: "Intermediate",
-      color: "cyber-purple",
-      features: ["Python & R", "Machine Learning", "Data Visualization", "Statistical Analysis", "Deep Learning"]
+      color: "from-cyber-purple to-purple-600"
     },
     {
       icon: Shield,
       title: "Cyber Security",
-      description: "Learn to protect digital assets and understand modern security threats.",
+      description: "Understand security fundamentals, ethical hacking, and digital forensics.",
+      duration: "8 weeks",
+      level: "Beginner to Advanced", 
+      color: "from-cyber-pink to-pink-600"
+    },
+    {
+      icon: Briefcase,
+      title: "Business Analysis",
+      description: "Develop skills in market research, business intelligence, and strategic planning.",
+      duration: "6 weeks",
+      level: "Beginner",
+      color: "from-cyber-green to-green-600"
+    },
+    {
+      icon: Cpu,
+      title: "AI & Machine Learning",
+      description: "Explore artificial intelligence, neural networks, and deep learning technologies.",
       duration: "14 weeks",
-      level: "Beginner to Advanced",
-      color: "cyber-pink",
-      features: ["Network Security", "Ethical Hacking", "Penetration Testing", "Security Auditing", "Incident Response"]
-    },
-    {
-      icon: Brain,
-      title: "AI/ML Engineering",
-      description: "Build intelligent systems and work with cutting-edge AI technologies.",
-      duration: "18 weeks",
       level: "Advanced",
-      color: "cyber-green",
-      features: ["TensorFlow & PyTorch", "Neural Networks", "Computer Vision", "NLP", "MLOps"]
+      color: "from-orange-500 to-red-500"
     },
     {
-      icon: Smartphone,
-      title: "Mobile Development",
-      description: "Create stunning mobile applications for iOS and Android platforms.",
-      duration: "12 weeks",
-      level: "Intermediate",
-      color: "cyber-blue",
-      features: ["React Native", "Flutter", "Native Development", "App Store Deploy", "Mobile UI/UX"]
-    },
-    {
-      icon: Cloud,
-      title: "Cloud Computing",
-      description: "Master cloud platforms and modern DevOps practices.",
-      duration: "10 weeks",
-      level: "Intermediate",
-      color: "cyber-purple",
-      features: ["AWS & Azure", "Docker & Kubernetes", "CI/CD Pipelines", "Infrastructure as Code", "Monitoring"]
+      icon: Globe,
+      title: "Digital Marketing",
+      description: "Master SEO, social media marketing, and digital advertising strategies.",
+      duration: "8 weeks",
+      level: "Beginner to Intermediate",
+      color: "from-teal-500 to-cyan-500"
     }
   ];
 
   return (
-    <div className="py-20 bg-background relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="cyber-grid h-full w-full" />
+    <section className="relative py-24 overflow-hidden">
+      {/* Flying Posters Background */}
+      <div className="absolute inset-0 z-0 opacity-60">
+        <FlyingPosters
+          items={programImages}
+          planeWidth={200}
+          planeHeight={200}
+          distortion={2}
+          scrollEase={0.02}
+          cameraFov={45}
+          cameraZ={15}
+        />
       </div>
 
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-cyber-blue text-lg font-medium mb-4"
-          >
-            OUR PROGRAMS
-          </motion.p>
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
-          >
-            We Provide Best <span className="neon-text">Internship</span> For You
-          </motion.h2>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl text-muted-foreground max-w-4xl mx-auto"
-          >
-            Choose from our comprehensive range of internship programs designed to give you practical, industry-relevant experience.
-          </motion.p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink bg-clip-text text-transparent">
+            Our Programs
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Choose from our comprehensive range of internship programs designed to give you hands-on experience 
+            in the latest technologies and industry practices.
+          </p>
         </motion.div>
 
-        {/* Programs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {programs.map((program, index) => (
             <motion.div
               key={program.title}
               initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              whileHover={{ 
-                scale: 1.05, 
-                rotateY: 5,
-                z: 50 
-              }}
-              viewport={{ once: true }}
-              className="group relative preserve-3d"
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="group relative"
             >
-              <div className="relative p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-500 holographic overflow-hidden">
-                {/* Animated Background */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-background/50 to-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  animate={{
-                    background: [
-                      "linear-gradient(45deg, rgba(0,245,255,0.1), rgba(139,92,246,0.1))",
-                      "linear-gradient(45deg, rgba(139,92,246,0.1), rgba(236,72,153,0.1))",
-                      "linear-gradient(45deg, rgba(236,72,153,0.1), rgba(0,255,159,0.1))",
-                      "linear-gradient(45deg, rgba(0,255,159,0.1), rgba(0,245,255,0.1))"
-                    ]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                />
-
+              <div className="relative p-8 rounded-2xl bg-card/40 backdrop-blur-md border border-border/30 hover:border-border/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden">
+                {/* Gradient Background */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${program.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
+                
                 {/* Icon */}
-                <motion.div 
-                  className={`w-16 h-16 rounded-xl bg-gradient-to-br from-${program.color} to-${program.color}/50 flex items-center justify-center mb-6 cyber-glow-${program.color.split('-')[1]} relative z-10`}
-                  whileHover={{ rotate: 360, scale: 1.1 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <program.icon className="w-8 h-8 text-white" />
-                </motion.div>
+                <div className={`relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${program.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <program.icon className="h-8 w-8 text-white" />
+                </div>
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-foreground mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-cyber-blue group-hover:to-cyber-purple group-hover:bg-clip-text transition-all duration-300">
                     {program.title}
                   </h3>
                   
@@ -156,74 +130,43 @@ const ProgramsSection = () => {
                     {program.description}
                   </p>
 
-                  {/* Program Details */}
-                  <div className="flex justify-between items-center mb-6 text-sm">
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 text-xs font-medium bg-cyber-blue/20 text-cyber-blue rounded-full border border-cyber-blue/30">
                       {program.duration}
                     </span>
-                    <span className="text-muted-foreground">
+                    <span className="px-3 py-1 text-xs font-medium bg-cyber-purple/20 text-cyber-purple rounded-full border border-cyber-purple/30">
                       {program.level}
                     </span>
                   </div>
 
-                  {/* Features */}
-                  <div className="space-y-2 mb-6">
-                    {program.features.map((feature, idx) => (
-                      <motion.div
-                        key={feature}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: idx * 0.1 }}
-                        className="flex items-center text-sm text-muted-foreground"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary mr-3" />
-                        {feature}
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* CTA Button */}
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button 
-                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-white border-0"
-                    >
-                      Apply Now
-                    </Button>
-                  </motion.div>
+                  <button className="w-full py-3 px-4 bg-gradient-to-r from-cyber-blue/20 to-cyber-purple/20 hover:from-cyber-blue hover:to-cyber-purple text-foreground hover:text-white rounded-xl border border-cyber-blue/30 hover:border-transparent transition-all duration-300 font-medium">
+                    Learn More
+                  </button>
                 </div>
 
-                {/* Floating Particles */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                      }}
-                      animate={{
-                        y: [0, -20, 0],
-                        opacity: [0, 1, 0],
-                        scale: [0, 1, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.3
-                      }}
-                    />
-                  ))}
-                </div>
+                {/* Floating Elements */}
+                <div className="absolute -top-2 -right-2 w-20 h-20 bg-gradient-to-br from-cyber-blue/20 to-cyber-purple/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+                <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-gradient-to-br from-cyber-pink/20 to-cyber-green/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
               </div>
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="text-center mt-12"
+        >
+          <p className="text-muted-foreground mb-6">
+            Can't find the perfect program? We also offer custom internship solutions.
+          </p>
+          <button className="px-8 py-4 bg-gradient-to-r from-cyber-blue to-cyber-purple hover:from-cyber-purple hover:to-cyber-pink text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 cyber-glow">
+            Contact Us for Custom Programs
+          </button>
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 

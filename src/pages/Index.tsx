@@ -26,7 +26,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
       {/* Subtle background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-cyber-dark/10 -z-10" />
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-cyber-dark/5 -z-10" />
       
       {/* Reduced Floating 3D Elements */}
       <FloatingElements />
@@ -41,27 +41,27 @@ const Index = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <section id="home">
+          <section id="home" className="relative">
             <HeroSection />
           </section>
           
-          <section id="about">
+          <section id="about" className="relative">
             <AboutSection />
           </section>
           
-          <section id="programs">
+          <section id="programs" className="relative">
             <ProgramsSection />
           </section>
           
-          <section id="verify">
+          <section id="verify" className="relative">
             <StatsSection />
           </section>
           
-          <section id="special">
+          <section id="special" className="relative">
             <TestimonialsSection />
           </section>
           
-          <section id="contact">
+          <section id="contact" className="relative">
             <ContactSection />
           </section>
         </motion.div>
