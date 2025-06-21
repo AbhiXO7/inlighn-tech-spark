@@ -1,12 +1,11 @@
 
 import { useEffect, useRef } from "react";
 import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
-
 import './Particles.css';
 
 const defaultColors = ["#ffffff", "#ffffff", "#ffffff"];
 
-const hexToRgb = (hex) => {
+const hexToRgb = (hex: string): [number, number, number] => {
   hex = hex.replace(/^#/, "");
   if (hex.length === 3) {
     hex = hex.split("").map((c) => c + c).join("");
@@ -77,7 +76,22 @@ const fragment = /* glsl */ `
   }
 `;
 
-const Particles = ({
+interface ParticlesProps {
+  particleCount?: number;
+  particleSpread?: number;
+  speed?: number;
+  particleColors: string[];
+  moveParticlesOnHover?: boolean;
+  particleHoverFactor?: number;
+  alphaParticles?: boolean;
+  particleBaseSize?: number;
+  sizeRandomness?: number;
+  cameraDistance?: number;
+  disableRotation?: boolean;
+  className?: string;
+}
+
+const Particles: React.FC<ParticlesProps> = ({
   particleCount = 200,
   particleSpread = 10,
   speed = 0.1,
@@ -89,10 +103,10 @@ const Particles = ({
   sizeRandomness = 1,
   cameraDistance = 20,
   disableRotation = false,
-  className,
+  className = '',
 }) => {
-  const containerRef = useRef(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -115,7 +129,7 @@ const Particles = ({
     window.addEventListener("resize", resize, false);
     resize();
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
@@ -169,11 +183,11 @@ const Particles = ({
 
     const particles = new Mesh(gl, { mode: gl.POINTS, geometry, program });
 
-    let animationFrameId;
+    let animationFrameId: number;
     let lastTime = performance.now();
     let elapsed = 0;
 
-    const update = (t) => {
+    const update = (t: number) => {
       animationFrameId = requestAnimationFrame(update);
       const delta = t - lastTime;
       lastTime = t;
@@ -210,7 +224,6 @@ const Particles = ({
         container.removeChild(gl.canvas);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     particleCount,
     particleSpread,

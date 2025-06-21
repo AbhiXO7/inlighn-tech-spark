@@ -1,7 +1,17 @@
 
 import { useRef, useEffect } from 'react';
+import { CSSProperties } from 'react';
 
-const LetterGlitch = ({
+interface LetterGlitchProps {
+  glitchColors?: string[];
+  className?: string;
+  glitchSpeed?: number;
+  centerVignette?: boolean;
+  outerVignette?: boolean;
+  smooth?: boolean;
+}
+
+const LetterGlitch: React.FC<LetterGlitchProps> = ({
   glitchColors = ['#2b4539', '#61dca3', '#61b3dc'],
   className = '',
   glitchSpeed = 50,
@@ -9,12 +19,17 @@ const LetterGlitch = ({
   outerVignette = true,
   smooth = true,
 }) => {
-  const canvasRef = useRef(null);
-  const animationRef = useRef(null);
-  const letters = useRef([]);
-  const grid = useRef({ columns: 0, rows: 0 });
-  const context = useRef(null);
-  const lastGlitchTime = useRef(Date.now());
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const letters = useRef<Array<{
+    char: string;
+    color: string;
+    targetColor: string;
+    colorProgress: number;
+  }>>([]);
+  const grid = useRef<{ columns: number; rows: number }>({ columns: 0, rows: 0 });
+  const context = useRef<CanvasRenderingContext2D | null>(null);
+  const lastGlitchTime = useRef<number>(Date.now());
 
   const fontSize = 16;
   const charWidth = 10;
@@ -36,7 +51,7 @@ const LetterGlitch = ({
     return glitchColors[Math.floor(Math.random() * glitchColors.length)];
   };
 
-  const hexToRgb = (hex) => {
+  const hexToRgb = (hex: string) => {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, (m, r, g, b) => {
       return r + r + g + g + b + b;
@@ -50,7 +65,7 @@ const LetterGlitch = ({
     } : null;
   };
 
-  const interpolateColor = (start, end, factor) => {
+  const interpolateColor = (start: {r: number, g: number, b: number}, end: {r: number, g: number, b: number}, factor: number) => {
     const result = {
       r: Math.round(start.r + (end.r - start.r) * factor),
       g: Math.round(start.g + (end.g - start.g) * factor),
@@ -59,13 +74,13 @@ const LetterGlitch = ({
     return `rgb(${result.r}, ${result.g}, ${result.b})`;
   };
 
-  const calculateGrid = (width, height) => {
+  const calculateGrid = (width: number, height: number) => {
     const columns = Math.ceil(width / charWidth);
     const rows = Math.ceil(height / charHeight);
     return { columns, rows };
   };
 
-  const initializeLetters = (columns, rows) => {
+  const initializeLetters = (columns: number, rows: number) => {
     grid.current = { columns, rows };
     const totalLetters = columns * rows;
     letters.current = Array.from({ length: totalLetters }, () => ({
@@ -104,7 +119,9 @@ const LetterGlitch = ({
   const drawLetters = () => {
     if (!context.current || letters.current.length === 0) return;
     const ctx = context.current;
-    const { width, height } = canvasRef.current.getBoundingClientRect();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const { width, height } = canvas.getBoundingClientRect();
     ctx.clearRect(0, 0, width, height);
     ctx.font = `${fontSize}px monospace`;
     ctx.textBaseline = 'top';
@@ -182,12 +199,14 @@ const LetterGlitch = ({
     resizeCanvas();
     animate();
 
-    let resizeTimeout;
+    let resizeTimeout: NodeJS.Timeout;
 
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        cancelAnimationFrame(animationRef.current);
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
         resizeCanvas();
         animate();
       }, 100);
@@ -196,43 +215,44 @@ const LetterGlitch = ({
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(animationRef.current);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       window.removeEventListener('resize', handleResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [glitchSpeed, smooth]);
 
-  const containerStyle = {
-    position: 'relative',
+  const containerStyle: CSSProperties = {
+    position: 'relative' as const,
     width: '100%',
     height: '100%',
     backgroundColor: '#000000',
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
   };
 
-  const canvasStyle = {
+  const canvasStyle: CSSProperties = {
     display: 'block',
     width: '100%',
     height: '100%',
   };
 
-  const outerVignetteStyle = {
-    position: 'absolute',
+  const outerVignetteStyle: CSSProperties = {
+    position: 'absolute' as const,
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    pointerEvents: 'none',
+    pointerEvents: 'none' as const,
     background: 'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)',
   };
 
-  const centerVignetteStyle = {
-    position: 'absolute',
+  const centerVignetteStyle: CSSProperties = {
+    position: 'absolute' as const,
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    pointerEvents: 'none',
+    pointerEvents: 'none' as const,
     background: 'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)',
   };
 

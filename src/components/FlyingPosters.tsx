@@ -9,7 +9,6 @@ import {
   Mesh,
   Texture,
 } from "ogl";
-
 import './FlyingPosters.css';
 
 const vertexShader = `
@@ -106,9 +105,12 @@ void main() {
 }
 `;
 
-function AutoBind(self: any, options: { include?: string[]; exclude?: string[] } = {}) {
-  const { include, exclude } = options;
-  
+interface AutoBindOptions {
+  include?: (string | RegExp)[];
+  exclude?: (string | RegExp)[];
+}
+
+function AutoBind(self: any, { include, exclude }: AutoBindOptions = {}) {
   const getAllProperties = (object: any) => {
     const properties = new Set();
     do {
@@ -120,9 +122,9 @@ function AutoBind(self: any, options: { include?: string[]; exclude?: string[] }
   };
 
   const filter = (key: string | symbol) => {
-    const keyStr = key.toString();
-    const match = (pattern: string) =>
-      typeof pattern === "string" ? keyStr === pattern : pattern.test?.(keyStr);
+    const keyStr = String(key);
+    const match = (pattern: string | RegExp) =>
+      typeof pattern === "string" ? keyStr === pattern : pattern.test(keyStr);
 
     if (include) return include.some(match);
     if (exclude) return !exclude.some(match);
@@ -139,17 +141,17 @@ function AutoBind(self: any, options: { include?: string[]; exclude?: string[] }
   return self;
 }
 
-function lerp(p1: number, p2: number, t: number) {
+function lerp(p1: number, p2: number, t: number): number {
   return p1 + (p2 - p1) * t;
 }
 
-function map(num: number, min1: number, max1: number, min2: number, max2: number, round = false) {
+function map(num: number, min1: number, max1: number, min2: number, max2: number, round = false): number {
   const num1 = (num - min1) / (max1 - min1);
   const num2 = num1 * (max2 - min2) + min2;
   return round ? Math.round(num2) : num2;
 }
 
-interface MediaParams {
+interface MediaProps {
   gl: any;
   geometry: any;
   scene: any;
@@ -164,7 +166,7 @@ interface MediaParams {
 }
 
 class Media {
-  extra = 0;
+  extra: number = 0;
   gl: any;
   geometry: any;
   scene: any;
@@ -178,24 +180,35 @@ class Media {
   distortion: number;
   program: any;
   plane: any;
-  padding = 0;
-  height = 0;
-  heightTotal = 0;
-  y = 0;
+  padding: number = 0;
+  height: number = 0;
+  heightTotal: number = 0;
+  y: number = 0;
 
-  constructor(params: MediaParams) {
-    this.extra = 0;
-    this.gl = params.gl;
-    this.geometry = params.geometry;
-    this.scene = params.scene;
-    this.screen = params.screen;
-    this.viewport = params.viewport;
-    this.image = params.image;
-    this.length = params.length;
-    this.index = params.index;
-    this.planeWidth = params.planeWidth;
-    this.planeHeight = params.planeHeight;
-    this.distortion = params.distortion;
+  constructor({
+    gl,
+    geometry,
+    scene,
+    screen,
+    viewport,
+    image,
+    length,
+    index,
+    planeWidth,
+    planeHeight,
+    distortion,
+  }: MediaProps) {
+    this.gl = gl;
+    this.geometry = geometry;
+    this.scene = scene;
+    this.screen = screen;
+    this.viewport = viewport;
+    this.image = image;
+    this.length = length;
+    this.index = index;
+    this.planeWidth = planeWidth;
+    this.planeHeight = planeHeight;
+    this.distortion = distortion;
 
     this.createShader();
     this.createMesh();
@@ -307,7 +320,7 @@ class Media {
   }
 }
 
-interface CanvasParams {
+interface CanvasProps {
   container: HTMLElement;
   canvas: HTMLCanvasElement;
   items: string[];
@@ -339,29 +352,39 @@ class Canvas {
   gl: any;
   camera: any;
   scene: any;
-  screen: { width: number; height: number } = { width: 0, height: 0 };
-  viewport: { width: number; height: number } = { width: 0, height: 0 };
   planeGeometry: any;
   medias: Media[] = [];
-  loaded = 0;
-  isDown = false;
-  start = 0;
+  loaded: number = 0;
+  screen: { width: number; height: number } = { width: 0, height: 0 };
+  viewport: { width: number; height: number } = { width: 0, height: 0 };
+  isDown: boolean = false;
+  start: number = 0;
 
-  constructor(params: CanvasParams) {
-    this.container = params.container;
-    this.canvas = params.canvas;
-    this.items = params.items;
-    this.planeWidth = params.planeWidth;
-    this.planeHeight = params.planeHeight;
-    this.distortion = params.distortion;
+  constructor({
+    container,
+    canvas,
+    items,
+    planeWidth,
+    planeHeight,
+    distortion,
+    scrollEase,
+    cameraFov,
+    cameraZ,
+  }: CanvasProps) {
+    this.container = container;
+    this.canvas = canvas;
+    this.items = items;
+    this.planeWidth = planeWidth;
+    this.planeHeight = planeHeight;
+    this.distortion = distortion;
     this.scroll = {
-      ease: params.scrollEase,
+      ease: scrollEase,
       current: 0,
       target: 0,
       last: 0,
     };
-    this.cameraFov = params.cameraFov;
-    this.cameraZ = params.cameraZ;
+    this.cameraFov = cameraFov;
+    this.cameraZ = cameraZ;
 
     AutoBind(this);
 
@@ -476,7 +499,7 @@ class Canvas {
     if (!this.isDown) return;
     const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const distance = (this.start - y) * 0.1;
-    this.scroll.target = this.scroll.position! + distance;
+    this.scroll.target = (this.scroll.position || 0) + distance;
   }
 
   onTouchUp() {
@@ -506,28 +529,28 @@ class Canvas {
   addEventListeners() {
     window.addEventListener("resize", this.onResize);
     window.addEventListener("wheel", this.onWheel);
-    window.addEventListener("mousewheel", this.onWheel);
+    window.addEventListener("mousewheel", this.onWheel as any);
 
-    window.addEventListener("mousedown", this.onTouchDown);
-    window.addEventListener("mousemove", this.onTouchMove);
+    window.addEventListener("mousedown", this.onTouchDown as any);
+    window.addEventListener("mousemove", this.onTouchMove as any);
     window.addEventListener("mouseup", this.onTouchUp);
 
-    window.addEventListener("touchstart", this.onTouchDown);
-    window.addEventListener("touchmove", this.onTouchMove);
+    window.addEventListener("touchstart", this.onTouchDown as any);
+    window.addEventListener("touchmove", this.onTouchMove as any);
     window.addEventListener("touchend", this.onTouchUp);
   }
 
   destroy() {
     window.removeEventListener("resize", this.onResize);
     window.removeEventListener("wheel", this.onWheel);
-    window.removeEventListener("mousewheel", this.onWheel);
+    window.removeEventListener("mousewheel", this.onWheel as any);
 
-    window.removeEventListener("mousedown", this.onTouchDown);
-    window.removeEventListener("mousemove", this.onTouchMove);
+    window.removeEventListener("mousedown", this.onTouchDown as any);
+    window.removeEventListener("mousemove", this.onTouchMove as any);
     window.removeEventListener("mouseup", this.onTouchUp);
 
-    window.removeEventListener("touchstart", this.onTouchDown);
-    window.removeEventListener("touchmove", this.onTouchMove);
+    window.removeEventListener("touchstart", this.onTouchDown as any);
+    window.removeEventListener("touchmove", this.onTouchMove as any);
     window.removeEventListener("touchend", this.onTouchUp);
   }
 }
@@ -609,7 +632,7 @@ export default function FlyingPosters({
   return (
     <div
       ref={containerRef}
-      className={`posters-container ${className}`}
+      className={`posters-container ${className || ''}`}
       {...props}
     >
       <canvas

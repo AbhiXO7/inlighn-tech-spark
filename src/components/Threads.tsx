@@ -1,7 +1,6 @@
 
 import { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle, Color } from "ogl";
-
 import "./Threads.css";
 
 const vertexShader = `
@@ -121,15 +120,22 @@ void main() {
 }
 `;
 
-const Threads = ({
+interface ThreadsProps {
+  color?: [number, number, number];
+  amplitude?: number;
+  distance?: number;
+  enableMouseInteraction?: boolean;
+}
+
+const Threads: React.FC<ThreadsProps> = ({
   color = [1, 1, 1],
   amplitude = 1,
   distance = 0,
   enableMouseInteraction = false,
   ...rest
 }) => {
-  const containerRef = useRef(null);
-  const animationFrameId = useRef();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const animationFrameId = useRef<number>();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -167,9 +173,10 @@ const Threads = ({
     function resize() {
       const { clientWidth, clientHeight } = container;
       renderer.setSize(clientWidth, clientHeight);
-      program.uniforms.iResolution.value.r = clientWidth;
-      program.uniforms.iResolution.value.g = clientHeight;
-      program.uniforms.iResolution.value.b = clientWidth / clientHeight;
+      const resolution = program.uniforms.iResolution.value as Color;
+      resolution.r = clientWidth;
+      resolution.g = clientHeight;
+      resolution.b = clientWidth / clientHeight;
     }
     window.addEventListener("resize", resize);
     resize();
@@ -177,7 +184,7 @@ const Threads = ({
     let currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
 
-    function handleMouseMove(e) {
+    function handleMouseMove(e: MouseEvent) {
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = 1.0 - (e.clientY - rect.top) / rect.height;
@@ -191,16 +198,18 @@ const Threads = ({
       container.addEventListener("mouseleave", handleMouseLeave);
     }
 
-    function update(t) {
+    function update(t: number) {
       if (enableMouseInteraction) {
         const smoothing = 0.05;
         currentMouse[0] += smoothing * (targetMouse[0] - currentMouse[0]);
         currentMouse[1] += smoothing * (targetMouse[1] - currentMouse[1]);
-        program.uniforms.uMouse.value[0] = currentMouse[0];
-        program.uniforms.uMouse.value[1] = currentMouse[1];
+        const mouseUniform = program.uniforms.uMouse.value as Float32Array;
+        mouseUniform[0] = currentMouse[0];
+        mouseUniform[1] = currentMouse[1];
       } else {
-        program.uniforms.uMouse.value[0] = 0.5;
-        program.uniforms.uMouse.value[1] = 0.5;
+        const mouseUniform = program.uniforms.uMouse.value as Float32Array;
+        mouseUniform[0] = 0.5;
+        mouseUniform[1] = 0.5;
       }
       program.uniforms.iTime.value = t * 0.001;
 
