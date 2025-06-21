@@ -15,7 +15,7 @@ const FloatingElements = () => {
       
       elements.forEach((el, index) => {
         const element = el as HTMLElement;
-        const speed = (index + 1) * 0.02;
+        const speed = (index + 1) * 0.01; // Reduced speed for subtlety
         const x = (mouseX - window.innerWidth / 2) * speed;
         const y = (mouseY - window.innerHeight / 2) * speed;
         
@@ -29,11 +29,11 @@ const FloatingElements = () => {
 
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-10">
-      {/* Floating Geometric Shapes */}
-      {[...Array(15)].map((_, i) => (
+      {/* Reduced number of geometric shapes for cleaner look */}
+      {[...Array(8)].map((_, i) => (
         <motion.div
           key={i}
-          className="floating-element absolute opacity-20"
+          className="floating-element absolute opacity-10" // Reduced opacity
           initial={{ 
             x: Math.random() * window.innerWidth, 
             y: Math.random() * window.innerHeight,
@@ -41,72 +41,63 @@ const FloatingElements = () => {
           }}
           animate={{ 
             rotate: 360,
-            y: [0, -20, 0]
+            y: [0, -10, 0] // Reduced movement
           }}
           transition={{
-            rotate: { duration: 10 + i * 2, repeat: Infinity, ease: "linear" },
-            y: { duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }
+            rotate: { duration: 15 + i * 3, repeat: Infinity, ease: "linear" },
+            y: { duration: 4 + i * 0.5, repeat: Infinity, ease: "easeInOut" }
           }}
           style={{
-            width: `${20 + i * 3}px`,
-            height: `${20 + i * 3}px`,
+            width: `${15 + i * 2}px`, // Smaller sizes
+            height: `${15 + i * 2}px`,
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
           }}
         >
           <div 
-            className={`w-full h-full border-2 ${
-              i % 3 === 0 ? 'border-cyber-blue' : 
-              i % 3 === 1 ? 'border-cyber-purple' : 
-              'border-cyber-pink'
-            } ${i % 2 === 0 ? 'rounded-full' : ''}`}
-            style={{
-              background: i % 4 === 0 ? 'linear-gradient(45deg, rgba(0,245,255,0.1), rgba(139,92,246,0.1))' : 'transparent'
-            }}
+            className={`w-full h-full border border-cyber-blue/30 ${i % 2 === 0 ? 'rounded-full' : ''}`}
           />
         </motion.div>
       ))}
 
-      {/* Circuit Lines */}
-      <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+      {/* Simplified circuit pattern */}
+      <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <pattern id="circuit" patternUnits="userSpaceOnUse" width="200" height="200">
-            <path d="M 0 100 L 50 100 L 50 50 L 150 50 L 150 150 L 200 150" 
-                  stroke="#00f5ff" strokeWidth="1" fill="none"/>
-            <circle cx="50" cy="100" r="3" fill="#00f5ff"/>
-            <circle cx="50" cy="50" r="3" fill="#8b5cf6"/>
-            <circle cx="150" cy="50" r="3" fill="#ec4899"/>
-            <circle cx="150" cy="150" r="3" fill="#00ff9f"/>
+          <pattern id="circuit" patternUnits="userSpaceOnUse" width="300" height="300">
+            <path d="M 0 150 L 75 150 L 75 75 L 225 75 L 225 225 L 300 225" 
+                  stroke="#00f5ff" strokeWidth="0.5" fill="none"/>
+            <circle cx="75" cy="150" r="2" fill="#00f5ff"/>
+            <circle cx="225" cy="75" r="2" fill="#8b5cf6"/>
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#circuit)"/>
       </svg>
 
-      {/* Animated Dots */}
-      {[...Array(8)].map((_, i) => (
+      {/* Reduced animated dots */}
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`dot-${i}`}
-          className="floating-element absolute w-2 h-2 rounded-full bg-cyber-blue"
+          className="floating-element absolute w-1 h-1 rounded-full bg-cyber-blue/50"
           initial={{ 
             x: Math.random() * window.innerWidth, 
             y: Math.random() * window.innerHeight,
           }}
           animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            opacity: [0, 1, 0],
+            x: [0, 50, 0],
+            y: [0, -25, 0],
+            opacity: [0, 0.7, 0],
             scale: [0, 1, 0]
           }}
           transition={{
-            duration: 4 + i,
+            duration: 6 + i,
             repeat: Infinity,
-            delay: i * 0.5,
+            delay: i * 1.5,
             ease: "easeInOut"
           }}
           style={{
-            left: `${10 + i * 10}%`,
-            top: `${10 + i * 10}%`,
-            boxShadow: '0 0 10px #00f5ff'
+            left: `${20 + i * 20}%`,
+            top: `${20 + i * 15}%`,
+            boxShadow: '0 0 5px rgba(0, 245, 255, 0.5)'
           }}
         />
       ))}

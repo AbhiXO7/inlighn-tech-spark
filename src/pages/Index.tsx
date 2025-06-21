@@ -24,8 +24,11 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Floating 3D Elements */}
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+      {/* Subtle background gradient */}
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-cyber-dark/10 -z-10" />
+      
+      {/* Reduced Floating 3D Elements */}
       <FloatingElements />
       
       {/* Navigation */}
