@@ -7,12 +7,16 @@ import LetterGlitch from './LetterGlitch';
 import Particles from './Particles';
 import CircularText from './CircularText';
 import ShinyText from './ShinyText';
+import SplashCursor from './SplashCursor';
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-950 via-gray-900 to-black pt-20">
+      {/* Add SplashCursor */}
+      <SplashCursor />
+      
       {/* Subtle LetterGlitch Background */}
-      <div className="absolute inset-0 z-0 opacity-30">
+      <div className="absolute inset-0 z-0 opacity-20">
         <LetterGlitch
           glitchColors={['#1a1a1a', '#2a2a2a', '#333333']}
           glitchSpeed={120}
@@ -23,13 +27,13 @@ const HeroSection = () => {
       </div>
 
       {/* Minimal Particles Layer */}
-      <div className="absolute inset-0 z-10 opacity-60">
+      <div className="absolute inset-0 z-10 opacity-40">
         <Particles
           particleColors={['#ffffff', '#f0f0f0']}
-          particleCount={80}
+          particleCount={60}
           particleSpread={12}
           speed={0.02}
-          particleBaseSize={60}
+          particleBaseSize={40}
           moveParticlesOnHover={true}
           alphaParticles={true}
           disableRotation={false}
@@ -52,7 +56,7 @@ const HeroSection = () => {
             transition={{ duration: 1, delay: 0.2 }}
           >
             Transform Your Career with{' '}
-            <ShinyText text="INLIGHN TECH" speed={4} className="text-6xl md:text-8xl font-black" />
+            <ShinyText text="INLIGHN TECH" speed={4} className="text-6xl md:text-8xl font-black inline-block" />
           </motion.h1>
           
           <motion.p 
@@ -62,9 +66,9 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             Gain real-world experience with our immersive internship programs in{' '}
-            <span className="text-blue-400 font-semibold">Cyber Security</span>,{' '}
-            <span className="text-purple-400 font-semibold">Full Stack Development</span>,{' '}
-            <span className="text-pink-400 font-semibold">Data Science</span>, and more tech domains.
+            <span className="text-gray-400 font-semibold">Cyber Security</span>,{' '}
+            <span className="text-gray-300 font-semibold">Full Stack Development</span>,{' '}
+            <span className="text-gray-200 font-semibold">Data Science</span>, and more tech domains.
           </motion.p>
 
           <motion.p 
@@ -105,13 +109,13 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}
-          className="flex justify-center items-center gap-8 flex-wrap mb-8"
+          className="flex justify-center items-center gap-8 flex-wrap mb-16"
         >
           {[
-            { icon: Code, label: "Full Stack", color: "text-blue-400" },
-            { icon: Database, label: "Data Science", color: "text-purple-400" },
-            { icon: Shield, label: "Cyber Security", color: "text-pink-400" },
-            { icon: Zap, label: "Innovation", color: "text-green-400" }
+            { icon: Code, label: "Full Stack", color: "text-gray-400" },
+            { icon: Database, label: "Data Science", color: "text-gray-300" },
+            { icon: Shield, label: "Cyber Security", color: "text-gray-200" },
+            { icon: Zap, label: "Innovation", color: "text-gray-100" }
           ].map((item, index) => (
             <motion.div
               key={item.label}
@@ -127,19 +131,21 @@ const HeroSection = () => {
           ))}
         </motion.div>
 
-        {/* Circular Text Element */}
+        {/* Circular Text Element - Fixed centering */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="flex justify-center"
+          className="flex justify-center items-center"
         >
-          <CircularText
-            text="FUTURE * TECH * LEADERS * "
-            spinDuration={30}
-            onHover="speedUp"
-            className="text-gray-500"
-          />
+          <div className="flex justify-center items-center w-full">
+            <CircularText
+              text="FUTURE * TECH * LEADERS * "
+              spinDuration={30}
+              onHover="speedUp"
+              className="text-gray-500 mx-auto"
+            />
+          </div>
         </motion.div>
       </div>
 

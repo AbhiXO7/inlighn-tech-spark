@@ -1,4 +1,3 @@
-
 import { useRef, useEffect } from "react";
 import {
   Renderer,
@@ -110,21 +109,21 @@ interface AutoBindOptions {
   exclude?: (string | RegExp)[];
 }
 
-function AutoBind(self: any, { include, exclude }: AutoBindOptions = {}) {
-  const getAllProperties = (object: any) => {
-    const properties = new Set();
+function AutoBind(self: any, { include, exclude }: AutoBindOptions = {}): any {
+  const getAllProperties = (object: any): [any, string | symbol][] => {
+    const properties = new Set<[any, string | symbol]>();
     do {
       for (const key of Reflect.ownKeys(object)) {
         properties.add([object, key]);
       }
     } while ((object = Reflect.getPrototypeOf(object)) && object !== Object.prototype);
-    return properties;
+    return Array.from(properties);
   };
 
-  const filter = (key: string | symbol) => {
-    const keyStr = String(key);
-    const match = (pattern: string | RegExp) =>
-      typeof pattern === "string" ? keyStr === pattern : pattern.test(keyStr);
+  const filter = (key: string | symbol): boolean => {
+    if (typeof key !== 'string') return false;
+    const match = (pattern: string | RegExp): boolean =>
+      typeof pattern === "string" ? key === pattern : pattern.test(key);
 
     if (include) return include.some(match);
     if (exclude) return !exclude.some(match);
